@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\DriverAuthController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\RouteController;
 use App\Http\Controllers\ProfileController;
@@ -14,6 +15,18 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
+});
+
+Route::prefix('driver')->name('driver.')->group(function () {
+    Route::middleware('guest:driver')->group(function () {
+        Route::get('login', [DriverAuthController::class, 'create'])->name('login');
+        Route::post('login', [DriverAuthController::class, 'store']);
+    });
+
+    Route::middleware('auth:driver')->group(function () {
+        Route::post('logout', [DriverAuthController::class, 'destroy'])->name('logout');
+        Route::get('dashboard', [DriverAuthController::class, 'dashboard'])->name('dashboard');
+    });
 });
 
 Route::get('/dashboard', function () {
