@@ -18,5 +18,9 @@
         "vite": "^5.0",
         "vue": "^3.4.0",
         "vue-tsc": "^2.0.24"
+    },
+    "dependencies": {
+        "vue-multiselect": "^3.1.0",
+        "vue-select": "^4.0.0-beta.6"
     }
 }

@@ -14,9 +14,9 @@ class RouteFactory extends Factory
         return [
             'origin' => $this->faker->city(),
             'destination' => $this->faker->city(),
-            'cost' => $this->faker->randomFloat(2, 10, 500), // Generates a cost between 10 and 500
+            'cost' => $this->faker->randomFloat(0, 10, 500),
             'date' => $this->faker->date(),
-            'driver_id' => null, // No assigned driver
+            'driver_id' => null,
         ];
     }
 }

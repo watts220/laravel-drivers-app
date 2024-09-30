@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateDriverRequest;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class DriverController extends Controller
 {
@@ -43,6 +44,18 @@ class DriverController extends Controller
         ]);
 
         return redirect()->route('drivers.index')->with('success', 'Driver created successfully!');
+    }
+
+    public function search(Request $request)
+    {
+        $searchTerm = $request->get('search');
+
+        // Assuming you want to search based on the driver's name
+        $drivers = Driver::where('first_name', 'like', "%{$searchTerm}%")
+            ->orWhere('last_name', 'like', "%{$searchTerm}%")
+            ->get(['id', 'first_name', 'last_name']);
+
+        return response()->json($drivers);
     }
 
     /**

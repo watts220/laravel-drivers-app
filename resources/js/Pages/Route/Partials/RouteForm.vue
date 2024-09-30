@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
 
 // Define props for freight_route, drivers, and errors
 const props = defineProps<{
@@ -19,8 +22,21 @@ const props = defineProps<{
   errors: Partial<Record<string, string | string[]>>;
 }>();
 
+interface Driver {
+  id: number;
+  first_name: string;
+  last_name: string;
+  fullName?: string; // Optional fullName field
+}
+
 // Destructure props to use within your form
-const { freight_route, drivers, errors } = props;
+const { freight_route, errors } = props;
+
+// Make drivers reactive
+const drivers = ref<Driver[]>(props.drivers.map(driver => ({
+  ...driver,
+  fullName: `${driver.first_name} ${driver.last_name}`
+})));
 
 // Initialize form with default values or existing freight_route values
 const form = useForm({
@@ -31,16 +47,32 @@ const form = useForm({
   driver_id: freight_route?.driver_id || null,
 });
 
+// Selected driver
+const selectedDriver = ref(drivers.value.find(driver => driver.id === form.driver_id));
+
 // Handle form submission
 const submit = () => {
+  form.driver_id = selectedDriver.value?.id || null;
+
   if (freight_route) {
     form.put(route('routes.update', freight_route.id));
   } else {
     form.post(route('routes.store'));
   }
 };
-</script>
 
+// Fetch drivers on search and update the list
+const searchDrivers = (query: string) => {
+  fetch(`/api/drivers?search=${query}`)
+    .then(response => response.json())
+    .then((data: Driver[]) => {
+      drivers.value = data.map((driver: Driver) => ({
+        ...driver,
+        fullName: `${driver.first_name} ${driver.last_name}` // Add a full name field
+      }));
+    });
+};
+</script>
 
 <template>
   <form @submit.prevent="submit">
@@ -74,22 +106,24 @@ const submit = () => {
       <p v-if="errors.date" class="text-red-500 text-xs mt-1">{{ errors.date[0] }}</p>
     </div>
 
-    <!-- Driver Selection -->
+    <!-- Driver Selection with Vue Multiselect -->
     <div class="mb-4">
       <label for="driver_id" class="block text-sm font-medium text-gray-700">Assign Driver</label>
-      <select v-model="form.driver_id" id="driver_id" class="mt-1 block w-full">
-        <option value="">Select Driver</option>
-        <option v-for="driver in props.drivers" :key="driver.id" :value="driver.id">
-          {{ driver.first_name }} {{ driver.last_name }}
-        </option>
-      </select>
+      <Multiselect
+        v-model="selectedDriver"
+        :options="drivers"
+        label="fullName"
+        track-by="id"
+        placeholder="Select a driver"
+        @search-change="searchDrivers"
+      />
       <p v-if="errors.driver_id" class="text-red-500 text-xs mt-1">{{ errors.driver_id[0] }}</p>
     </div>
 
     <!-- Submit Button -->
     <div class="mt-6">
       <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-        Update Route
+        {{ freight_route ? 'Update Route' : 'Create Route' }}
       </button>
     </div>
   </form>
