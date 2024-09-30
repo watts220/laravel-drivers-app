@@ -27,7 +27,7 @@ class RouteController extends Controller
      */
     public function create()
     {
-        $drivers = Driver::all(); // Fetch all drivers to assign to a route
+        $drivers = Driver::all();
         return Inertia::render('Route/Create', [
             'drivers' => $drivers
         ]);
