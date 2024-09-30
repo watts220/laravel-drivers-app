@@ -3,15 +3,15 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Driver;
+use App\Models\Route;
 
-class DriverSeeder extends Seeder
+class RouteSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Driver::factory()->count(100)->create();
+        Route::factory()->count(100)->create();
     }
 }
