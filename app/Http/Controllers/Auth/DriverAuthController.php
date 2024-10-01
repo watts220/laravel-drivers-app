@@ -50,6 +50,14 @@ class DriverAuthController extends Controller
     // Show the dashboard after login
     public function dashboard()
     {
-        return Inertia::render('Driver/Dashboard');
+        $driver = auth('driver')->user();
+
+        $routes = $driver->routes()->with('driver')->get();
+
+        return Inertia::render('Driver/Dashboard', [
+            'driver' => $driver,
+            'routes' => $routes,
+        ]);
     }
+
 }
