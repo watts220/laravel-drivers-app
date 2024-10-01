@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import DriverLayout from '@/Layouts/DriverLayout.vue';
 import { Head } from '@inertiajs/vue3';
 
 // Define the props being passed into the component
@@ -23,7 +23,7 @@ const props = defineProps<{
 <template>
   <Head title="Routes" />
 
-  <AuthenticatedLayout>
+  <DriverLayout>
     <template #header>
       <h2 class="text-xl font-semibold leading-tight text-gray-800">
         Routes
@@ -66,5 +66,5 @@ const props = defineProps<{
         </div>
       </div>
     </div>
-  </AuthenticatedLayout>
+  </DriverLayout>
 </template>

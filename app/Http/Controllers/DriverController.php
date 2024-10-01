@@ -35,7 +35,6 @@ class DriverController extends Controller
      */
     public function store(StoreDriverRequest $request): RedirectResponse
     {
-        // Create a new driver with validated data, including the hashed password
         Driver::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
@@ -50,13 +49,23 @@ class DriverController extends Controller
     {
         $searchTerm = $request->get('search');
 
-        // Assuming you want to search based on the driver's name
         $drivers = Driver::where('first_name', 'like', "%{$searchTerm}%")
             ->orWhere('last_name', 'like', "%{$searchTerm}%")
             ->get(['id', 'first_name', 'last_name']);
 
         return response()->json($drivers);
     }
+
+    public function showRoutes(Driver $driver)
+    {
+        $routes = $driver->routes()->with('driver')->get();
+
+        return Inertia::render('Driver/Routes', [
+            'driver' => $driver,
+            'routes' => $routes,
+        ]);
+    }
+
 
     /**
      * Display the specified resource.
@@ -83,20 +92,16 @@ class DriverController extends Controller
      */
     public function update(UpdateDriverRequest $request, Driver $driver): RedirectResponse
     {
-        // Update the driver with validated data, excluding password if not present
         $driver->fill($request->except('password'));
 
-        // If the email is changed, reset email verification
         if ($driver->isDirty('email')) {
             $driver->email_verified_at = null;
         }
 
-        // If password is provided, hash it and update
         if ($request->filled('password')) {
             $driver->password = Hash::make($request->password);
         }
 
-        // Save the updated driver
         $driver->save();
 
         return redirect()->route('drivers.index')->with('success', 'Driver updated successfully!');

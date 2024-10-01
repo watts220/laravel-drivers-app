@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::resource('drivers', DriverController::class);
     Route::get('/drivers/search', [DriverController::class, 'search'])->name('drivers.search');
+    Route::get('/drivers/{driver}/routes', [DriverController::class, 'showRoutes'])->name('drivers.routes');
 });
 
 Route::middleware('auth')->group(function () {
